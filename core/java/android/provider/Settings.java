@@ -4891,6 +4891,24 @@ public final class Settings {
         public static final String POWERMENU_LS_TORCH = "powermenu_ls_torch";
 
         /**
+         * Clock font size
+         * @hide
+         */
+        public static final String STATUS_BAR_CLOCK_SIZE = "status_bar_clock_size";
+
+        /**
+         * Clock font color
+         * @hide
+         */
+        public static final String STATUS_BAR_CLOCK_COLOR = "status_bar_clock_color";
+
+        /**
+         * Clock font style
+         * @hide
+         */
+        public static final String STATUS_BAR_CLOCK_FONT_STYLE = "status_bar_clock_font_style";
+
+        /**
          * Whether to display the reboot option on the power menu
          *
          * @hide
