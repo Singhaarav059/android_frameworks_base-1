@@ -6328,6 +6328,12 @@ public final class Settings {
         public static final String NETWORK_TRAFFIC_AUTOHIDE_THRESHOLD = "network_traffic_autohide_threshold";
 
         /**
+         * Whether to disable showing arrows in statusbar network traffic indicators
+         * @hide
+         */
+        public static final String NETWORK_TRAFFIC_HIDEARROW = "network_traffic_hidearrow";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * NOTE: Settings are backed up and restored in the order they appear
          *       in this array. If you have one setting depending on another,
