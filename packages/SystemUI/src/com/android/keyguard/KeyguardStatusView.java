@@ -91,6 +91,11 @@ public class KeyguardStatusView extends GridLayout implements
     private boolean mShowingHeader;
 
     private int mClockSelection;
+    private int mDateSelection;
+
+    // Date styles paddings
+    private int mDateVerPadding;
+    private int mDateHorPadding;
 
     private KeyguardUpdateMonitorCallback mInfoCallback = new KeyguardUpdateMonitorCallback() {
 
@@ -133,7 +138,8 @@ public class KeyguardStatusView extends GridLayout implements
             updateLogoutView();
             mClockView.refreshLockFont();
             refreshLockDateFont();
-        }
+            updateDateStyles();
+	}
 
         @Override
         public void onLogoutEnabledChanged() {
@@ -216,6 +222,7 @@ public class KeyguardStatusView extends GridLayout implements
 
         mClockView.refreshLockFont();
 	refreshLockDateFont();
+        updateDateStyles();
 
         mTextColor = mClockView.getCurrentTextColor();
 
@@ -528,6 +535,35 @@ public class KeyguardStatusView extends GridLayout implements
                 R.dimen.widget_vertical_padding_with_header);
     }
 
+    private void updateDateStyles() {
+        final ContentResolver resolver = getContext().getContentResolver();
+
+        mDateSelection = Settings.Secure.getIntForUser(resolver,
+                Settings.Secure.LOCKSCREEN_DATE_SELECTION, 0, UserHandle.USER_CURRENT);
+
+        switch (mDateSelection) {
+            case 0: // default
+            default:
+                mKeyguardSlice.setViewBackgroundResource(0);
+                mDateVerPadding = 0;
+                mDateHorPadding = 0;
+                mKeyguardSlice.setViewPadding(mDateHorPadding,mDateVerPadding,mDateHorPadding,mDateVerPadding);
+                break;
+            case 1: // semi-transparent box
+                mKeyguardSlice.setViewBackground(getResources().getDrawable(R.drawable.date_box_str_border));
+                mDateHorPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_box_padding_hor),getResources().getDisplayMetrics()));
+                mDateVerPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_box_padding_ver),getResources().getDisplayMetrics()));
+                mKeyguardSlice.setViewPadding(mDateHorPadding,mDateVerPadding,mDateHorPadding,mDateVerPadding);
+                break;
+            case 2: // semi-transparent box (round)
+                mKeyguardSlice.setViewBackground(getResources().getDrawable(R.drawable.date_str_border));
+                mDateHorPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_box_padding_hor),getResources().getDisplayMetrics()));
+                mDateVerPadding = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.widget_date_box_padding_ver),getResources().getDisplayMetrics()));
+                mKeyguardSlice.setViewPadding(mDateHorPadding,mDateVerPadding,mDateHorPadding,mDateVerPadding);
+                break;
+        }
+    }
+
     private void updateLsClockSettings() {
         final ContentResolver resolver = getContext().getContentResolver();
 
@@ -622,6 +658,7 @@ public class KeyguardStatusView extends GridLayout implements
 
     public void updateAll() {
         updateLsClockSettings();
+        updateDateStyles();
     }
 
     // DateFormat.getBestDateTimePattern is extremely expensive, and refresh is called often.
