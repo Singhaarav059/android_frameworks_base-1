@@ -5843,6 +5843,12 @@ public final class Settings {
 
         /** @hide */
         private static final Validator QS_BACKGROUND_BLUR_INTENSITY_VALIDATOR = ANY_INTEGER_VALIDATOR;
+        
+        /**
+         * DismissAll Button
+         * @hide
+         */
+        public static final String DISMISS_ALL_BUTTON = "dismiss_all_button";
 
         /**
          * Whether to enable pulse edge lights
