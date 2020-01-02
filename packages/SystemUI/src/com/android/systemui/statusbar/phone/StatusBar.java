@@ -4452,6 +4452,9 @@ public class StatusBar extends SystemUI implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.BACK_SWIPE_TYPE),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.Secure.getUriFor(
+                    Settings.Secure.LOCKSCREEN_CLOCK_SELECTION),
+                    false, this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -4476,6 +4479,7 @@ public class StatusBar extends SystemUI implements DemoMode,
             updateBlurVisibility();
             updateNavigationBarVisibility();
             setGestureNavOptions();
+            updateKeyguardStatusSettings();
         }
     }
 
@@ -4570,6 +4574,11 @@ public class StatusBar extends SystemUI implements DemoMode,
         if (getNavigationBarView() != null) {
             getNavigationBarView().updateBackGestureHaptic();
         }
+
+    }
+
+    private void updateKeyguardStatusSettings() {
+        mNotificationPanel.updateKeyguardStatusSettings();
     }
 
     private void updateNavigationBarVisibility() {
