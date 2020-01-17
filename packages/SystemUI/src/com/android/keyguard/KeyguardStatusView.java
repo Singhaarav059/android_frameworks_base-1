@@ -68,6 +68,7 @@ public class KeyguardStatusView extends GridLayout implements
     private KeyguardClockSwitch mClockView;
     private CustomTextClock mTextClock;
     private CustomAnalogClock mCustomClockView;
+    private CustomAnalogClock mCustomNumClockView;
     private TextView mOwnerInfo;
     private TextClock mDefaultClockView;
     private KeyguardSliceView mKeyguardSlice;
@@ -208,6 +209,7 @@ public class KeyguardStatusView extends GridLayout implements
         mClockView.setShowCurrentUserTime(true);
         mTextClock = findViewById(R.id.custom_text_clock_view);
         mCustomNumClockView = findViewById(R.id.custom_clock_view);
+        mCustomNumClockView = findViewById(R.id.custom_num_clock_view);
         mOwnerInfo = findViewById(R.id.owner_info);
         mKeyguardSlice = findViewById(R.id.keyguard_status_area);
         mKeyguardSliceView = findViewById(R.id.keyguard_status_area);
@@ -300,6 +302,8 @@ public class KeyguardStatusView extends GridLayout implements
             mTextClock.onTimeChanged();
         } else if (mClockSelection == 9) {
             mCustomClockView.onTimeChanged();
+        } else if (mClockSelection == 10) {
+            mCustomNumClockView.onTimeChanged();
         } else {
             mClockView.setFormat12Hour(Html.fromHtml("<strong>hh</strong><br>mm"));
             mClockView.setFormat24Hour(Html.fromHtml("<strong>kk</strong><br>mm"));
@@ -537,24 +541,28 @@ public class KeyguardStatusView extends GridLayout implements
         mDefaultClockView = findViewById(R.id.default_clock_view);
         mTextClock = findViewById(R.id.custom_text_clock_view);
         mCustomClockView = findViewById(R.id.custom_clock_view);
+        mCustomNumClockView = findViewById(R.id.custom_num_clock_view);
 
         switch (mClockSelection) {
             case 1: // hidden
                 mSmallClockView.setVisibility(View.GONE);
                 mTextClock.setVisibility(View.GONE);
                 mCustomClockView.setVisibility(View.GONE);
+                mCustomNumClockView.setVisibility(View.GONE);
                 params.addRule(RelativeLayout.BELOW, R.id.clock_view);
                 break;
             case 2: // default
                 mSmallClockView.setVisibility(View.VISIBLE);
                 mTextClock.setVisibility(View.GONE);
                 mCustomClockView.setVisibility(View.GONE);
+                mCustomNumClockView.setVisibility(View.GONE);
                 params.addRule(RelativeLayout.BELOW, R.id.clock_view);
                 break;
             case 3: // default (bold)
                 mSmallClockView.setVisibility(View.VISIBLE);
                 mTextClock.setVisibility(View.GONE);
                 mCustomClockView.setVisibility(View.GONE);
+                mCustomNumClockView.setVisibility(View.GONE);
                 params.addRule(RelativeLayout.BELOW, R.id.clock_view);
                 break;
             case 4: // sammy
@@ -562,6 +570,7 @@ public class KeyguardStatusView extends GridLayout implements
 		mDefaultClockView.setLineSpacing(0, 0.8f);
                 mTextClock.setVisibility(View.GONE);
                 mCustomClockView.setVisibility(View.GONE);
+                mCustomNumClockView.setVisibility(View.GONE);
                 params.addRule(RelativeLayout.BELOW, R.id.clock_view);
                 break;
             case 5: // sammy (bold)
@@ -569,6 +578,7 @@ public class KeyguardStatusView extends GridLayout implements
 		mDefaultClockView.setLineSpacing(0, 0.8f);
                 mTextClock.setVisibility(View.GONE);
                 mCustomClockView.setVisibility(View.GONE);
+                mCustomNumClockView.setVisibility(View.GONE);
                 params.addRule(RelativeLayout.BELOW, R.id.clock_view);
                 break;
             case 6: // sammy (hour accent)
@@ -576,6 +586,7 @@ public class KeyguardStatusView extends GridLayout implements
 		mDefaultClockView.setLineSpacing(0, 0.8f);
                 mTextClock.setVisibility(View.GONE);
                 mCustomClockView.setVisibility(View.GONE);
+                mCustomNumClockView.setVisibility(View.GONE);
                 params.addRule(RelativeLayout.BELOW, R.id.clock_view);
                 break;
             case 7: // sammy (minute accent)
@@ -583,12 +594,14 @@ public class KeyguardStatusView extends GridLayout implements
 		mDefaultClockView.setLineSpacing(0, 0.8f);
                 mTextClock.setVisibility(View.GONE);
                 mCustomClockView.setVisibility(View.GONE);
+                mCustomNumClockView.setVisibility(View.GONE);
                 params.addRule(RelativeLayout.BELOW, R.id.clock_view);
                 break;
             case 8: // custom text clock
                 mTextClock.setVisibility(View.VISIBLE);
                 mSmallClockView.setVisibility(View.GONE);
                 mCustomClockView.setVisibility(View.GONE);
+                mCustomNumClockView.setVisibility(View.GONE);
                 params.addRule(RelativeLayout.BELOW, R.id.custom_text_clock_view);
                 break;
             case 9: // custom analog clock
@@ -596,6 +609,13 @@ public class KeyguardStatusView extends GridLayout implements
                 mTextClock.setVisibility(View.GONE);
                 mSmallClockView.setVisibility(View.GONE);
                 params.addRule(RelativeLayout.BELOW, R.id.custom_clock_view);
+                break;
+            case 10: // custom num analog clock
+                mCustomNumClockView.setVisibility(View.VISIBLE);
+                mTextClock.setVisibility(View.GONE);
+                mSmallClockView.setVisibility(View.GONE);
+                mCustomClockView.setVisibility(View.GONE);
+                params.addRule(RelativeLayout.BELOW, R.id.custom_num_clock_view);
                 break;
         }
     }
