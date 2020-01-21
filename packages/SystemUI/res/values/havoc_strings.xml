@@ -271,4 +271,5 @@
     <string name="fod_view_title" translatable="false">Fingerprint on display</string>
     <string name="fod_view_pressed_title" translatable="false">Fingerprint on display.touched</string>
 
+    <string name="usage_data">used</string>
 </resources>
