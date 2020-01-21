@@ -6120,6 +6120,12 @@ public final class Settings {
         public static final String KEY_CAMERA_LONG_PRESS_ACTION = "key_camera_long_press_action";
 
         /**
+         * Show data usage in QS header
+         * @hide
+         */
+        public static final String QS_DATAUSAGE = "qs_datausage";
+
+        /**
          * Action to perform when the camera key is double-tapped.
          * (Default can be configured via config_doubleTapOnHardwareCameraBehavior)
          * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
