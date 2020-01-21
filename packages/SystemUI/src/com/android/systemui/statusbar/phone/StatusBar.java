@@ -208,6 +208,7 @@ import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.CrossFadeHelper;
 import com.android.systemui.statusbar.EmptyShadeView;
 import com.android.systemui.statusbar.GestureRecorder;
+import com.android.systemui.statusbar.info.DataUsageView;
 import com.android.systemui.statusbar.KeyboardShortcuts;
 import com.android.systemui.statusbar.KeyguardIndicationController;
 import com.android.systemui.statusbar.NavigationBarController;
@@ -518,6 +519,7 @@ public class StatusBar extends SystemUI implements DemoMode,
     
     private static Context mStaticContext;
     private static ImageButton mDismissAllButton;
+    private boolean dataupdated = false;
     protected static NotificationPanelView mStaticNotificationPanel;
     public static boolean mClearableNotifications;
 
@@ -1184,6 +1186,11 @@ public class StatusBar extends SystemUI implements DemoMode,
         float QSBlurAlpha = mNotificationPanel.getExpandedFraction() * (float)((float) QSUserAlpha / 100.0);
         boolean enoughBlurData = (QSBlurAlpha > 0 && qsBlurIntensity() > 0);
 
+        if (QSBlurAlpha > 0 && !dataupdated && !mIsKeyguard) {
+            DataUsageView.updateUsage();
+            dataupdated = true;
+        }
+
         if (enoughBlurData && !blurperformed && !mIsKeyguard && isQSBlurEnabled()) {
             drawBlurView();
             blurperformed = true;
@@ -1191,6 +1198,7 @@ public class StatusBar extends SystemUI implements DemoMode,
         } else if (!enoughBlurData || mState == StatusBarState.KEYGUARD) {
             blurperformed = false;
             mQSBlurView.setVisibility(View.GONE);
+            dataupdated = false;
         }
         mQSBlurView.setAlpha(QSBlurAlpha);
     }
