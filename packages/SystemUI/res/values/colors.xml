@@ -210,6 +210,7 @@
     <color name="GM2_green_500">#FF34A853</color>
 
     <color name="recents_dismiss_all_background_color">@android:color/white</color>
+    <color name="recents_dismiss_all_background_color_ripple">#a8a8a8</color>
     <color name="recents_dismiss_all_icon_color">#8a000000</color>
 
     <color name="volume_dialog_background">@android:color/white</color>
@@ -222,5 +223,6 @@
 
    <color name="row_icon_dark">@color/ringer_icon_normal</color>
    <color name="row_icon_white">@android:color/white</color>
+
 
 </resources>
