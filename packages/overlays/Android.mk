@@ -70,6 +70,7 @@ LOCAL_REQUIRED_MODULES := \
 	IconShapeAncient3Overlay \
 	IconShapeAncient4Overlay \
         IconShapeAncient5Overlay \
+        IconShapeAncient6Overlay \
 	IconShapeRoundedRectOverlay \
 	IconShapeSquareOverlay \
 	IconShapeSquircleOverlay \
