@@ -113,8 +113,6 @@ public class MobileSignalController extends SignalController<
     private ImsManager.Connector mImsManagerConnector;
     private boolean mVolteIcon = true;
 
-    // Volte Icon
-    private boolean mVoLTEicon;
     // Volte Icon Style
     private int mVoLTEstyle;
 
@@ -212,9 +210,6 @@ public class MobileSignalController extends SignalController<
                     Settings.System.getUriFor(Settings.System.USE_OLD_MOBILETYPE), false,
                     this, UserHandle.USER_ALL);
             resolver.registerContentObserver(
-	            Settings.System.getUriFor(Settings.System.SHOW_VOLTE_ICON), false,
-		    this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(
 	            Settings.System.getUriFor(Settings.System.VOLTE_ICON_STYLE), false,
 		    this, UserHandle.USER_ALL);
             updateSettings();
@@ -247,10 +242,6 @@ public class MobileSignalController extends SignalController<
         int useHDIcon = (mConfig.showHDVolteIcon ? 1 : 0);
         mShowHDVolte = Settings.System.getIntForUser(resolver,
                 Settings.System.SHOW_HD_ICON, useHDIcon,
-                UserHandle.USER_CURRENT) == 1;
-
-        mVoLTEicon = Settings.System.getIntForUser(resolver,
-                 Settings.System.SHOW_VOLTE_ICON, 0,
                 UserHandle.USER_CURRENT) == 1;
 
        mVoLTEstyle = Settings.System.getIntForUser(resolver,
@@ -497,7 +488,7 @@ public class MobileSignalController extends SignalController<
     private int getVolteResId() {
         int resId = 0;
 
-        if ( mCurrentState.imsRegistered && mVoLTEicon) {
+        if ( mCurrentState.imsRegistered ) {
             switch(mVoLTEstyle) {
                 // VoLTE
                 case 1:
@@ -564,7 +555,7 @@ public class MobileSignalController extends SignalController<
         showDataIcon &= mCurrentState.isDefault || dataDisabled;
 
         int typeIcon = (showDataIcon || mConfig.alwaysShowDataRatIcon) ? icons.mDataType : 0;
-        int volteIcon = isVolteSwitchOn() && mVolteIcon
+        int volteIcon = mConfig.showVolteIcon && isVolteSwitchOn() && mVolteIcon
                 ? getVolteResId() : 0;
         callback.setMobileDataIndicators(statusIcon, qsIcon, typeIcon, qsTypeIcon,
                 activityIn, activityOut, volteIcon, dataContentDescription, dataContentDescriptionHtml,
@@ -987,7 +978,9 @@ public class MobileSignalController extends SignalController<
     private final BroadcastReceiver mVolteSwitchObserver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             Log.d(mTag, "action=" + intent.getAction());
-            notifyListeners();
+            if ( mConfig.showVolteIcon ) {
+                notifyListeners();
+            }
         }
     };
 
