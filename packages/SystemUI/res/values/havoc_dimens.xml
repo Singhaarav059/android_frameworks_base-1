@@ -25,10 +25,6 @@
     <!-- QS tile title -->
     <dimen name="qs_tile_height_wo_label">48dp</dimen>
 
-    <!-- Network traffic monitor -->
-    <dimen name="net_traffic_multi_text_size">8dp</dimen>
-    <dimen name="net_traffic_txt_img_padding">2dp</dimen>
-
     <dimen name="quick_status_bar_margin">8dp</dimen>
 
     <dimen name="screenrecord_dot_size">48dp</dimen>
@@ -113,4 +109,4 @@
     <!-- Width of the battery icon in the status bar when set to circle style. -->
     <dimen name="status_bar_battery_icon_circle_width">13.5dp</dimen>
 
-</resources>
+=======
