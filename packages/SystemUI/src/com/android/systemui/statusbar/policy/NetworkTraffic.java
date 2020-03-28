@@ -257,13 +257,15 @@ public class NetworkTraffic extends TextView implements StatusIconDisplayable {
     private void updateSettings() {
         updateVisibility();
         if (mIsEnabled) {
-            if (mAttached) {
-                totalRxBytes = TrafficStats.getTotalRxBytes();
-                lastUpdateTime = SystemClock.elapsedRealtime();
-                mTrafficHandler.sendEmptyMessage(1);
+            if (getConnectAvailable()) {
+                if (mAttached) {
+                    totalRxBytes = TrafficStats.getTotalRxBytes();
+                    lastUpdateTime = SystemClock.elapsedRealtime();
+                    mTrafficHandler.sendEmptyMessage(1);
+                }
+                updateTrafficDrawable();
+                return;
             }
-            updateTrafficDrawable();
-            return;
         } else {
             clearHandlerCallbacks();
         }
