@@ -5554,6 +5554,15 @@ public final class Settings {
         public static final Validator STATUSBAR_CLOCK_DATE_POSITION_VALIDATOR = BOOLEAN_VALIDATOR;
 
         /**
+         * @hide
+         */
+        public static final String FORCE_SHOW_NAVBAR = "navigation_bar_show_new";
+
+        /** @hide */
+        private static final Validator FORCE_SHOW_NAVBAR_VALIDATOR =
+                ANY_INTEGER_VALIDATOR;
+
+        /**
          * Status bar carrier label
          * 0: Hide
          * 1: Display on keyguard status bar
@@ -5797,12 +5806,6 @@ public final class Settings {
          */
         public static final String FLASHLIGHT_ON_CALL_WAITING = "flashlight_on_call_waiting";
 
-        /** @hide */
-        public static final String GESTURE_PILL_TOGGLE = "gesture_pill_toggle";
-
-        /** @hide */
-        private static final Validator GESTURE_PILL_TOGGLE_VALIDATOR = BOOLEAN_VALIDATOR;
-
         /**
          * Whether to vibrate on notifications
          * @hide
@@ -5935,15 +5938,6 @@ public final class Settings {
          * @hide
          */
         public static final String PULSE_TRIGGER_REASON = "pulse_trigger_reason";
-
-        /**
-         * Force show navigation bar setting.
-         * @hide
-         */
-        public static final String FORCE_SHOW_NAVBAR = "force_show_navbar";
-
-         /** @hide */
-        public static final Validator FORCE_SHOW_NAVBAR_VALIDATOR = BOOLEAN_VALIDATOR;
 
         /**
          * Whether to show arrow keys in navigation bar
@@ -6474,11 +6468,11 @@ public final class Settings {
             PULSE_BRIGHTNESS,
             DOZE_BRIGHTNESS,
             FLASHLIGHT_ON_CALL,
-            GESTURE_PILL_TOGGLE,
             BACK_GESTURE_HAPTIC,
             QS_BACKGROUND_BLUR,
             QS_BACKGROUND_BLUR_ALPHA,
             QS_BACKGROUND_BLUR_INTENSITY,
+            FORCE_SHOW_NAVBAR,
             NAVIGATION_BAR_ARROW_KEYS,
             CUSTOM_BUTTON_BRIGHTNESS,
             CUSTOM_BUTTON_USE_SCREEN_BRIGHTNESS,
@@ -6676,7 +6670,6 @@ public final class Settings {
             PRIVATE_SETTINGS.add(PULSE_BRIGHTNESS);
             PRIVATE_SETTINGS.add(DOZE_BRIGHTNESS);
             PRIVATE_SETTINGS.add(FLASHLIGHT_ON_CALL);
-            PRIVATE_SETTINGS.add(GESTURE_PILL_TOGGLE);
             PRIVATE_SETTINGS.add(INCALL_FEEDBACK_VIBRATE);
             PRIVATE_SETTINGS.add(BACK_GESTURE_HAPTIC);
             PRIVATE_SETTINGS.add(AMBIENT_NOTIFICATION_LIGHT);
@@ -6876,7 +6869,6 @@ public final class Settings {
             VALIDATORS.put(PULSE_BRIGHTNESS, PULSE_BRIGHTNESS_VALIDATOR);
             VALIDATORS.put(DOZE_BRIGHTNESS, DOZE_BRIGHTNESS_VALIDATOR);
             VALIDATORS.put(FLASHLIGHT_ON_CALL, FLASHLIGHT_ON_CALL_VALIDATOR);
-            VALIDATORS.put(GESTURE_PILL_TOGGLE, GESTURE_PILL_TOGGLE_VALIDATOR);
             VALIDATORS.put(INCALL_FEEDBACK_VIBRATE, INCALL_FEEDBACK_VIBRATE_VALIDATOR);
             VALIDATORS.put(BACK_GESTURE_HAPTIC, BACK_GESTURE_HAPTIC_VALIDATOR);
             VALIDATORS.put(QS_BACKGROUND_BLUR, QS_BACKGROUND_BLUR_VALIDATOR);
@@ -17744,6 +17736,18 @@ public final class Settings {
         @SdkConstant(SdkConstant.SdkConstantType.ACTIVITY_INTENT_ACTION)
         public static final String ACTION_MOBILE_DATA =
                 "android.settings.panel.action.MOBILE_DATA";
+
+        /**
+         * Activity Action: Show a settings dialog containing controls for Bluetooth.
+         * <p>
+         * Input: Nothing.
+         * <p>
+         * Output: Nothing.
+         * @hide
+         */
+        @SdkConstant(SdkConstant.SdkConstantType.ACTIVITY_INTENT_ACTION)
+        public static final String ACTION_BLUETOOTH =
+                "android.settings.panel.action.BLUETOOTH";
     }
 
     private static final String[] PM_WRITE_SETTINGS = {

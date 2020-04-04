@@ -16,9 +16,16 @@
 
 package com.android.systemui.biometrics;
 
+import static com.android.internal.widget.LockPatternUtils.StrongAuthTracker.STRONG_AUTH_REQUIRED_AFTER_DPM_LOCK_NOW;
+import static com.android.internal.widget.LockPatternUtils.StrongAuthTracker.STRONG_AUTH_REQUIRED_AFTER_LOCKOUT;
+import static com.android.internal.widget.LockPatternUtils.StrongAuthTracker.STRONG_AUTH_REQUIRED_AFTER_TIMEOUT;
+import static com.android.internal.widget.LockPatternUtils.StrongAuthTracker.STRONG_AUTH_REQUIRED_AFTER_USER_LOCKDOWN;
+
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.ContentObserver;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -30,7 +37,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.RemoteException;
+import android.os.UserHandle;
 import android.provider.Settings;
+import android.net.Uri;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -42,11 +51,11 @@ import android.widget.ImageView;
 
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardUpdateMonitorCallback;
+import com.android.keyguard.KeyguardSecurityModel.SecurityMode;
 import com.android.systemui.Dependency;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
-import com.android.systemui.tuner.TunerService;
 
 import vendor.lineage.biometrics.fingerprint.inscreen.V1_0.IFingerprintInscreen;
 import vendor.lineage.biometrics.fingerprint.inscreen.V1_0.IFingerprintInscreenCallback;
@@ -55,8 +64,7 @@ import java.util.NoSuchElementException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class FODCircleView extends ImageView implements TunerService.Tunable, ConfigurationListener {
-    private final String SCREEN_BRIGHTNESS = "system:" + Settings.System.SCREEN_BRIGHTNESS;
+public class FODCircleView extends ImageView implements ConfigurationListener {
 
     private final int mPositionX;
     private final int mPositionY;
@@ -80,6 +88,7 @@ public class FODCircleView extends ImageView implements TunerService.Tunable, Co
     private boolean mIsShowing;
     private boolean mIsCircleShowing;
     private boolean mIsAuthenticated;
+    private boolean mCanUnlockWithFp;
 
     private float mCurrentDimAmount = 0.0f;
 
@@ -136,10 +145,17 @@ public class FODCircleView extends ImageView implements TunerService.Tunable, Co
         public void onKeyguardBouncerChanged(boolean isBouncer) {
             mIsBouncer = isBouncer;
 
-            if (isBouncer) {
+            if (mUpdateMonitor.isFingerprintDetectionRunning()) {
+                final SecurityMode sec = mUpdateMonitor.getSecurityMode();
+                final boolean maybeShow = sec == SecurityMode.Pattern ||
+                        sec == SecurityMode.PIN;
+                if (maybeShow || !mIsBouncer) {
+                    show();
+                } else {
+                    hide();
+                }
+            } else {
                 hide();
-            } else if (mUpdateMonitor.isFingerprintDetectionRunning()) {
-                show();
             }
         }
 
@@ -160,10 +176,83 @@ public class FODCircleView extends ImageView implements TunerService.Tunable, Co
                 show();
             }
         }
+
+        @Override
+        public void onBiometricHelp(int msgId, String helpString,
+                BiometricSourceType biometricSourceType) {
+            if (msgId == -1) { // Auth error
+                hideCircle();
+                mHandler.post(() -> mFODAnimation.hideFODanimation());
+            }
+        }
+
+        @Override
+        public void onStrongAuthStateChanged(int userId) {
+            mCanUnlockWithFp = canUnlockWithFp();
+            if (mIsShowing && !mCanUnlockWithFp) {
+                hide();
+            }
+        }
     };
+
+    private class BrightnessObserver extends ContentObserver {
+        Context mContext;
+
+        BrightnessObserver(Context context, Handler handler) {
+            super(handler);
+            mContext = context;
+        }
+
+        void registerBrightnessListener() {
+            mContext.getContentResolver().registerContentObserver(
+                    Settings.System.getUriFor(
+                    Settings.System.SCREEN_BRIGHTNESS),
+                    false, this, UserHandle.USER_ALL);
+            updateCurrentBrightnessValue();
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            super.onChange(selfChange, uri);
+            if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.SCREEN_BRIGHTNESS))) {
+                updateCurrentBrightnessValue();
+            }
+        }
+
+        public void updateCurrentBrightnessValue() {
+            int currentBrightness = Settings.System.getIntForUser(mContext.getContentResolver(),
+                    Settings.System.SCREEN_BRIGHTNESS, 0,
+                    UserHandle.USER_CURRENT);
+            mCurrentBrightness = currentBrightness;
+            updateDim();
+        }
+    }
+
+    private boolean canUnlockWithFp() {
+        int currentUser = ActivityManager.getCurrentUser();
+        boolean biometrics = mUpdateMonitor.isUnlockingWithBiometricsPossible(currentUser);
+        KeyguardUpdateMonitor.StrongAuthTracker strongAuthTracker =
+                mUpdateMonitor.getStrongAuthTracker();
+        int strongAuth = strongAuthTracker.getStrongAuthForUser(currentUser);
+        if (biometrics && !strongAuthTracker.hasUserAuthenticatedSinceBoot()) {
+            return false;
+        } else if (biometrics && (strongAuth & STRONG_AUTH_REQUIRED_AFTER_TIMEOUT) != 0) {
+            return false;
+        } else if (biometrics && (strongAuth & STRONG_AUTH_REQUIRED_AFTER_DPM_LOCK_NOW) != 0) {
+            return false;
+        } else if (biometrics && (strongAuth & STRONG_AUTH_REQUIRED_AFTER_LOCKOUT) != 0) {
+            return false;
+        } else if (biometrics && (strongAuth & STRONG_AUTH_REQUIRED_AFTER_USER_LOCKDOWN) != 0) {
+            return false;
+        }
+        return true;
+    }
 
     private boolean mCutoutMasked;
     private int mStatusbarHeight;
+
+    private BrightnessObserver mBrightnessObserver;
 
     public FODCircleView(Context context) {
         super(context);
@@ -215,6 +304,11 @@ public class FODCircleView extends ImageView implements TunerService.Tunable, Co
         mUpdateMonitor = KeyguardUpdateMonitor.getInstance(context);
         mUpdateMonitor.registerCallback(mMonitorCallback);
 
+        mBrightnessObserver = new BrightnessObserver(context, mHandler);
+        mBrightnessObserver.registerBrightnessListener();
+
+        mCanUnlockWithFp = canUnlockWithFp();
+
         updateCutoutFlags();
 
         Dependency.get(ConfigurationController.class).addCallback(this);
@@ -235,15 +329,7 @@ public class FODCircleView extends ImageView implements TunerService.Tunable, Co
 
         mFodPressedImage = res.getBoolean(R.bool.config_fodPressedImage);
 
-        Dependency.get(TunerService.class).addTunable(this, SCREEN_BRIGHTNESS);
-
         mFODAnimation = new FODAnimation(context, mPositionX, mPositionY);
-    }
-
-    @Override
-    public void onTuningChanged(String key, String newValue) {
-        mCurrentBrightness = newValue != null ?  Integer.parseInt(newValue) : 0;
-        updateDim();
     }
 
     @Override
@@ -388,6 +474,11 @@ public class FODCircleView extends ImageView implements TunerService.Tunable, Co
             return;
         }
 
+        if (!mCanUnlockWithFp) {
+            // Ignore when unlocking with fp is not possible
+            return;
+        }
+
         mIsShowing = true;
         mIsAuthenticated = false;
 
@@ -504,7 +595,7 @@ public class FODCircleView extends ImageView implements TunerService.Tunable, Co
                 com.android.internal.R.dimen.status_bar_height_portrait);
         boolean cutoutMasked = getContext().getResources().getBoolean(
                 com.android.internal.R.bool.config_maskMainBuiltInDisplayCutout);
-        if (mCutoutMasked != cutoutMasked){
+        if (mCutoutMasked != cutoutMasked) {
             mCutoutMasked = cutoutMasked;
             updatePosition();
         }

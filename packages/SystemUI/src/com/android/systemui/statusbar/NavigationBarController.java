@@ -88,6 +88,10 @@ public class NavigationBarController implements Callbacks {
         }
     }
 
+    public SystemUiVisibility createSystemUiVisibility() {
+        return new SystemUiVisibility();
+    }
+
     @Override
     public void onDisplayRemoved(int displayId) {
         removeNavigationBar(displayId);
@@ -95,16 +99,8 @@ public class NavigationBarController implements Callbacks {
 
     @Override
     public void onDisplayReady(int displayId) {
-        onDisplayReady(displayId, null);
-    }
-
-    public void onDisplayReady(int displayId, SystemUiVisibility systemUiVisibility) {
         Display display = mDisplayManager.getDisplay(displayId);
-        createNavigationBar(display, null, systemUiVisibility);
-    }
-
-    public SystemUiVisibility createSystemUiVisibility() {
-        return new SystemUiVisibility();
+        createNavigationBar(display, null, null);
     }
 
     // TODO(b/117478341): I use {@code includeDefaultDisplay} to make this method compatible to
@@ -116,10 +112,15 @@ public class NavigationBarController implements Callbacks {
      */
     public void createNavigationBars(final boolean includeDefaultDisplay,
             RegisterStatusBarResult result) {
-        createNavigationBars(includeDefaultDisplay, result, null);
+        Display[] displays = mDisplayManager.getDisplays();
+        for (Display display : displays) {
+            if (includeDefaultDisplay || display.getDisplayId() != DEFAULT_DISPLAY) {
+                createNavigationBar(display, result, null);
+            }
+        }
     }
 
-    public void createNavigationBars(final boolean includeDefaultDisplay,
+    public void recreateNavigationBars(final boolean includeDefaultDisplay,
             RegisterStatusBarResult result, SystemUiVisibility systemUiVisibility) {
         Display[] displays = mDisplayManager.getDisplays();
         for (Display display : displays) {
@@ -136,12 +137,8 @@ public class NavigationBarController implements Callbacks {
      * @param display the display to add navigation bar on.
      */
     @VisibleForTesting
-    void createNavigationBar(Display display, RegisterStatusBarResult result) {
-        createNavigationBar(display, result, null);
-    }
-
     void createNavigationBar(Display display, RegisterStatusBarResult result,
-            SystemUiVisibility systemUiVisibility) {
+                SystemUiVisibility systemUiVisibility) {
         if (display == null) {
             return;
         }
@@ -184,8 +181,7 @@ public class NavigationBarController implements Callbacks {
                     : new AutoHideController(context, mHandler);
             navBar.setAutoHideController(autoHideController);
             navBar.restoreSystemUiVisibilityState();
-
-            if (systemUiVisibility != null && systemUiVisibility.displayId == displayId) {
+            if (systemUiVisibility != null) {
                 navBar.setSystemUiVisibility(systemUiVisibility.displayId,
                         systemUiVisibility.vis,
                         systemUiVisibility.fullscreenStackVis,
@@ -195,7 +191,6 @@ public class NavigationBarController implements Callbacks {
                         systemUiVisibility.dockedStackBounds,
                         systemUiVisibility.navbarColorManagedByIme);
             }
-
             mNavigationBars.append(displayId, navBar);
 
             if (result != null) {
@@ -206,7 +201,10 @@ public class NavigationBarController implements Callbacks {
         });
     }
 
-    private void removeNavigationBar(int displayId) {
+    /**
+     * @hide
+     */
+    public void removeNavigationBar(int displayId) {
         NavigationBarFragment navBar = mNavigationBars.get(displayId);
         if (navBar != null) {
             View navigationWindow = navBar.getView().getRootView();
