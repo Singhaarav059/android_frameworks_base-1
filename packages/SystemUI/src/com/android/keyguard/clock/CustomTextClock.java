@@ -147,10 +147,6 @@ public class CustomTextClock extends TextView implements ColorExtractor.OnColors
     private int findColor(int color, int background, boolean againstDark, int accent, int fallback) {
         if (!isGreyscale(color)) {
             return color;
-        }
-        int contrastAccent = NotificationColorUtil.ensureTextContrast(accent, background, againstDark);
-        if (!isGreyscale(contrastAccent)) {
-            return contrastAccent;
         } else {
             return fallback;
         }
@@ -191,7 +187,6 @@ public class CustomTextClock extends TextView implements ColorExtractor.OnColors
             mSettingsObserver = new SettingsObserver(new Handler());
         }
         mSettingsObserver.observe();
-        updateClockColor();
         updateClockSize();
     }
 
@@ -329,14 +324,6 @@ public class CustomTextClock extends TextView implements ColorExtractor.OnColors
   	    }
     }
 
-    private void updateClockColor() {
-        mClockColor = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.LOCKSCREEN_CLOCK_COLOR, 0xFFFFFFFF,
-                UserHandle.USER_CURRENT);
-            setTextColor(mClockColor);
-            onTimeChanged();
-    }
-
     public void updateClockSize() {
         mClockSize = Settings.System.getIntForUser(mContext.getContentResolver(),
                 Settings.System.CUSTOM_TEXT_CLOCK_FONT_SIZE, 40,
@@ -353,16 +340,12 @@ public class CustomTextClock extends TextView implements ColorExtractor.OnColors
             ContentResolver resolver = mContext.getContentResolver();
 
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.LOCKSCREEN_CLOCK_COLOR),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.CUSTOM_TEXT_CLOCK_FONT_SIZE),
                     false, this, UserHandle.USER_ALL);
         }
 
         @Override
         public void onChange(boolean selfChange) {
-	    updateClockColor();
 	    updateClockSize();
         }
     }

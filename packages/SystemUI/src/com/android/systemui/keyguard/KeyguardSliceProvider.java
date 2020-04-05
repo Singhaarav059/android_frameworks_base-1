@@ -328,7 +328,6 @@ public class KeyguardSliceProvider extends SliceProvider implements
             }
             updateClockLocked();
         }
-    }
 
     @Override
     public boolean onCreateSliceProvider() {
