@@ -117,21 +117,21 @@ public class Clock extends TextView implements DemoMode, CommandQueue.Callbacks,
 
     private int mClockFontStyle = FONT_NORMAL;
     public static final int FONT_NORMAL = 0;
-    public static final int FONT_ITALIC = 1;
-    public static final int FONT_BOLD = 2;
+    public static final int FONT_BOLD = 1;
+    public static final int FONT_ITALIC = 2;
     public static final int FONT_BOLD_ITALIC = 3;
-    public static final int FONT_LIGHT = 4;
-    public static final int FONT_LIGHT_ITALIC = 5;
-    public static final int FONT_THIN = 6;
-    public static final int FONT_THIN_ITALIC = 7;
+    public static final int FONT_LIGHT_ITALIC = 4;
+    public static final int FONT_LIGHT = 5;
+    public static final int FONT_THIN_ITALIC = 6;
+    public static final int FONT_THIN = 7;
     public static final int FONT_CONDENSED = 8;
     public static final int FONT_CONDENSED_ITALIC = 9;
-    public static final int FONT_CONDENSED_LIGHT = 10;
-    public static final int FONT_CONDENSED_LIGHT_ITALIC = 11;
-    public static final int FONT_CONDENSED_BOLD = 12;
-    public static final int FONT_CONDENSED_BOLD_ITALIC = 13;
-    public static final int FONT_MEDIUM = 14;
-    public static final int FONT_MEDIUM_ITALIC = 15;
+    public static final int FONT_CONDENSED_BOLD = 10;
+    public static final int FONT_CONDENSED_BOLD_ITALIC = 11;
+    public static final int FONT_MEDIUM = 12;
+    public static final int FONT_MEDIUM_ITALIC = 13;
+    public static final int FONT_CONDENSED_LIGHT = 14;
+    public static final int FONT_CONDENSED_LIGHT_ITALIC = 15;
     public static final int FONT_BLACK = 16;
     public static final int FONT_BLACK_ITALIC = 17;
     public static final int FONT_DANCINGSCRIPT = 18;
@@ -147,6 +147,11 @@ public class Clock extends TextView implements DemoMode, CommandQueue.Callbacks,
     public static final int GOOGLESANS = 28;
     public static final int NEONEON = 29;
     public static final int THEMEABLE = 30;
+    public static final int SAMSUNG = 31;
+    public static final int MEXCELLENT = 32;
+    public static final int BURNSTOWN = 33;
+    public static final int DUMBLEDOR = 34;
+    public static final int PHANTOMBOLD = 35;
     public int DEFAULT_CLOCK_SIZE = 14;
     public int DEFAULT_CLOCK_COLOR = 0xffffffff;
 
@@ -891,6 +896,18 @@ public class Clock extends TextView implements DemoMode, CommandQueue.Callbacks,
                 break;
             case THEMEABLE:
                 setTypeface(Typeface.create("themeable-sys", Typeface.NORMAL));
+                break;
+            case SAMSUNG:
+                setTypeface(Typeface.create("samsung-sys", Typeface.NORMAL));
+                break;
+            case MEXCELLENT:
+                setTypeface(Typeface.create("mexcellent-sys", Typeface.NORMAL));
+                break;
+            case DUMBLEDOR:
+                setTypeface(Typeface.create("dumbledor-sys", Typeface.NORMAL));
+                break;
+            case PHANTOMBOLD:
+                setTypeface(Typeface.create("phontombold-sys", Typeface.NORMAL));
                 break;
         }
     }
