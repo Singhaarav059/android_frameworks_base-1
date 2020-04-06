@@ -490,19 +490,38 @@ public class MobileSignalController extends SignalController<
 
         if ( mCurrentState.imsRegistered ) {
             switch(mVoLTEstyle) {
-                // VoLTE
+                // Asus Style VoLTE
                 case 1:
                     resId = R.drawable.ic_volte1;
                     break;
-                // OOS VoLTE
+                // Vo
                 case 2:
                     resId = R.drawable.ic_volte2;
                     break;
-                // HD Icon
+                // VoLIT
                 case 3:
-                    resId = R.drawable.ic_hd_volte;
+                     resId = R.drawable.ic_volte3;
+                     break;
+                // Margarita VoLTE
+                case 4:
+                     resId = R.drawable.ic_volte4;
+                     break;
+                // OOS VoLTE
+                case 5:
+                     resId = R.drawable.ic_volte5;
+                     break;
+                // HD Icon
+                case 6:
+                     resId = R.drawable.ic_hd_volte;
+                     break;
+                // Android One HD icon
+                case 7:
+                     resId = R.drawable.ic_mi_hd;
+                     break;
+                case 8:
+                    resId = R.drawable.ic_volte_miui;
                     break;
- 	        //Vo
+ 	        // TOS VoLTE
                 case 0:
                 default:
                     resId = R.drawable.ic_volte;
