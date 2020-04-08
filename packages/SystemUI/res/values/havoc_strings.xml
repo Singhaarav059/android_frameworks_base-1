@@ -272,4 +272,8 @@
     <string name="fod_view_pressed_title" translatable="false">Fingerprint on display.touched</string>
 
     <string name="usage_data">used</string>
+
+    <!-- Alerting notification header label -->
+    <string name="notification_section_header_alerting">Alerting notifications</string>
+
 </resources>
