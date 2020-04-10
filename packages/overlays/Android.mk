@@ -39,12 +39,20 @@ LOCAL_REQUIRED_MODULES := \
 	FontOnePlusSlateOverlay \
 	FontAclonicaSourceOverlay \
 	FontAmaranteSourceOverlay \
+	FontAntipastoProSourceOverlay \
 	FontBariolSourceOverlay \
 	FontCagliostroSourceOverlay \
 	FontCoolstorySourceOverlay \
 	FontLGSmartGothicSourceOverlay \
 	FontNotoSerifSourceOverlay \
 	FontRosemarySourceOverlay \
+	FontEvolveSansSourceOverlay \
+	FontFucekSourceOverlay \
+	FontGoogleSansMediumSourceOverlay \
+	FontLemonMilkSourceOverlay \
+	FontOdudaSourceOverlay \
+	FontReemKufiSourceOverlay \
+	FontSimpleDaySourceOverlay \
 	FontSonySketchSourceOverlay \
 	FontSurferSourceOverlay \
 	FontOneplusSlateSource \
