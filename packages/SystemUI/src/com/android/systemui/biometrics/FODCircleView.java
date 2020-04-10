@@ -102,6 +102,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     private final boolean mFodPressedImage;
 
     private FODAnimation mFODAnimation;
+    private boolean mIsRecognizingAnimEnabled;
 
     private IFingerprintInscreenCallback mFingerprintInscreenCallback =
             new IFingerprintInscreenCallback.Stub() {
@@ -136,6 +137,8 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         public void onKeyguardVisibilityChanged(boolean showing) {
             mIsKeyguard = showing;
 
+            updateSettings();
+
             if (mFODAnimation != null) {
                 mFODAnimation.setAnimationKeyguard(mIsKeyguard);
             }
@@ -145,7 +148,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         public void onKeyguardBouncerChanged(boolean isBouncer) {
             mIsBouncer = isBouncer;
 
-            if (mUpdateMonitor.isFingerprintDetectionRunning()) {
+            if (mIsKeyguard && mUpdateMonitor.isFingerprintDetectionRunning()) {
                 final SecurityMode sec = mUpdateMonitor.getSecurityMode();
                 final boolean maybeShow = sec == SecurityMode.Pattern ||
                         sec == SecurityMode.PIN;
@@ -180,7 +183,8 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         @Override
         public void onBiometricHelp(int msgId, String helpString,
                 BiometricSourceType biometricSourceType) {
-            if (msgId == -1) { // Auth error
+            if (biometricSourceType == BiometricSourceType.FINGERPRINT &&
+                    msgId == -1) { // Auth error
                 hideCircle();
                 mHandler.post(() -> mFODAnimation.hideFODanimation());
             }
@@ -298,6 +302,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
         mWindowManager.addView(this, mParams);
 
+        updateSettings();
         updatePosition();
         hide();
 
@@ -350,7 +355,9 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
         if (event.getAction() == MotionEvent.ACTION_DOWN && newIsInside) {
             showCircle();
-            mHandler.post(() -> mFODAnimation.showFODanimation());
+            if (mIsRecognizingAnimEnabled) {
+                mHandler.post(() -> mFODAnimation.showFODanimation());
+            }
             return true;
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
             hideCircle();
@@ -366,6 +373,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        updateSettings();
         updatePosition();
     }
 
@@ -571,6 +579,11 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
             mWindowManager.updateViewLayout(this, mParams);
         }
+    }
+
+    private void updateSettings() {
+        mIsRecognizingAnimEnabled = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.FOD_RECOGNIZING_ANIMATION, 1) != 0;
     }
 
     private class BurnInProtectionTask extends TimerTask {

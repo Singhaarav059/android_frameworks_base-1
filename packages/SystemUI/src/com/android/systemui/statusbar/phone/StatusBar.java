@@ -1679,6 +1679,9 @@ public class StatusBar extends SystemUI implements DemoMode,
         mRunningTaskId = taskId;
         mIsLauncherShowing = taskComponentName.equals(mDefaultHome);
         mTaskComponentName = taskComponentName;
+        if (mMediaManager != null) {
+            mMediaManager.setRunningPackage(mTaskComponentName.getPackageName());
+        }
     }
 
     @Nullable
@@ -4440,6 +4443,9 @@ public class StatusBar extends SystemUI implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.FORCE_SHOW_NAVBAR),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.SHOW_MEDIA_HEADS_UP),
+                    false, this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -4465,6 +4471,7 @@ public class StatusBar extends SystemUI implements DemoMode,
             setGestureNavOptions();
             updateKeyguardStatusSettings();
             updateNavigationBar(getRegisterStatusBarResult(), false);
+            setMediaHeadsup();
         }
     }
 
@@ -4569,6 +4576,12 @@ public class StatusBar extends SystemUI implements DemoMode,
     private void setGestureNavOptions() {
         if (getNavigationBarView() != null) {
             getNavigationBarView().setLongSwipeOptions();
+        }
+    }
+
+    private void setMediaHeadsup() {
+        if (mMediaManager != null) {
+            mMediaManager.setMediaHeadsup();
         }
     }
 
