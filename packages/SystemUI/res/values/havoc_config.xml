@@ -34,7 +34,7 @@
 
     <!-- The default tiles to display in QuickSettings -->
     <string name="quick_settings_tiles_extra" translatable="false">
-        aod,adb_network,caffeine,compass,cpuinfo,fpsinfo,gaming,heads_up,hwkeys,livedisplay,lte,music,reading_mode,reboot,screenrecord,screenshot,screenstabilization,smartpixels,sound,soundsearch,dataswitch,sync,usb_tether
+        aod,adb_network,caffeine,compass,cpuinfo,fpsinfo,gaming,heads_up,hwkeys,livedisplay,music,reading_mode,reboot,screenrecord,screenshot,screenstabilization,smartpixels,sound,soundsearch,dataswitch,sync,usb_tether
     </string>
 
     <!-- Color of the FOD view -->
@@ -96,8 +96,5 @@
 
     <!-- Whether to show biometric help only when failed -->
     <bool name="config_biometricHelpShowOnlyWhenFailed">false</bool>
-
-    <!-- Enable face auth only when swiping security view -->
-    <bool name="config_faceAuthOnlyOnSecurityView">false</bool>
 
 </resources>

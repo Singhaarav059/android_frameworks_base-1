@@ -324,6 +324,14 @@ public class KeyguardIndicationController implements StateListener,
     }
 
     /**
+     * Sets if the device is plugged in
+     */
+    @VisibleForTesting
+    void setPowerPluggedIn(boolean plugged) {
+        mPowerPluggedIn = plugged;
+    }
+
+    /**
      * Returns the indication text indicating that trust is currently being managed.
      *
      * @return {@code null} or an empty string if a trust managed text should not be shown.
@@ -430,6 +438,12 @@ public class KeyguardIndicationController implements StateListener,
             int userId = KeyguardUpdateMonitor.getCurrentUser();
             String trustGrantedIndication = getTrustGrantedIndication();
             String trustManagedIndication = getTrustManagedIndication();
+
+            String powerIndication = null;
+            if (mPowerPluggedIn) {
+                powerIndication = computePowerIndication();
+            }
+
             if (!mUserManager.isUserUnlocked(userId)) {
                 mTextView.switchIndication(com.android.internal.R.string.lockscreen_storage_locked);
                 mTextView.setTextColor(mInitialTextColorState);
@@ -438,21 +452,27 @@ public class KeyguardIndicationController implements StateListener,
                 mTextView.setTextColor(mTransientTextColorState);
             } else if (!TextUtils.isEmpty(trustGrantedIndication)
                     && mKeyguardUpdateMonitor.getUserHasTrust(userId)) {
-                mTextView.switchIndication(trustGrantedIndication);
+                if (powerIndication != null) {
+                    String indication = mContext.getResources().getString(
+                            R.string.keyguard_indication_trust_unlocked_plugged_in,
+                            trustGrantedIndication, powerIndication);
+                    mTextView.switchIndication(indication);
+                } else {
+                    mTextView.switchIndication(trustGrantedIndication);
+                }
                 mTextView.setTextColor(mInitialTextColorState);
             } else if (!TextUtils.isEmpty(mAlignmentIndication)) {
                 mTextView.switchIndication(mAlignmentIndication);
                 mTextView.setTextColor(Utils.getColorError(mContext));
             } else if (mPowerPluggedIn) {
-                String indication = computePowerIndication();
                 if (DEBUG_CHARGING_SPEED) {
-                    indication += ",  " + (mChargingWattage / 1000) + " mW";
+                    powerIndication += ",  " + (mChargingWattage / 1000) + " mW";
                 }
                 mTextView.setTextColor(mInitialTextColorState);
                 if (animate) {
-                    animateText(mTextView, indication);
+                    animateText(mTextView, powerIndication);
                 } else {
-                    mTextView.switchIndication(indication);
+                    mTextView.switchIndication(powerIndication);
                 }
             } else if (!TextUtils.isEmpty(trustManagedIndication)
                     && mKeyguardUpdateMonitor.getUserTrustIsManaged(userId)
@@ -517,7 +537,8 @@ public class KeyguardIndicationController implements StateListener,
                 });
     }
 
-    private String computePowerIndication() {
+    @VisibleForTesting
+    String computePowerIndication() {
         if (mPowerCharged) {
             return mContext.getResources().getString(R.string.keyguard_charged);
         }

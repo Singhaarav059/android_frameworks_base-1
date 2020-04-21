@@ -5722,10 +5722,10 @@ public final class Settings {
         public static final String SWAP_NAVIGATION_KEYS = "swap_navigation_keys";
 
         /**
-         * Screenrecord: enable mic
+         * Screenrecord: audio source
          * @hide
          */
-        public static final String SCREENRECORD_ENABLE_MIC = "screenrecord_enable_mic";
+        public static final String SCREENRECORD_AUDIO_SOURCE = "screenrecord_audio_source";
 
         /**
          * Screenrecord: show taps
@@ -5740,10 +5740,10 @@ public final class Settings {
         public static final String SCREENRECORD_STOP_DOT = "screenrecord_stop_dot";
 
         /**
-         * Screenrecord: low quality
+         * Screenrecord: video bitrate
          * @hide
          */
-        public static final String SCREENRECORD_LOW_QUALITY = "screenrecord_low_quality";
+        public static final String SCREENRECORD_VIDEO_BITRATE = "screenrecord_video_bitrate";
 
         /**
          * @hide
@@ -6400,6 +6400,18 @@ public final class Settings {
          * @hide
          */
         public static final String ADAPTIVE_PLAYBACK_TIMEOUT = "adaptive_playback_timeout";
+
+        /**
+         * Screen off FOD
+         * @hide
+         */
+        public static final String SCREEN_OFF_FOD = "screen_off_fod";
+
+        /**
+         * Whether to show IME space when navbar pill is hidden
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_IME_SPACE = "navigation_bar_ime_space";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
@@ -11338,6 +11350,12 @@ public final class Settings {
          * @hide
          */
         public static final String HARDWARE_KEYS_ENABLE = "hardware_keys_enable";
+
+        /**
+         * Whether face unlock is allowed only on security view.
+         * @hide
+         */
+        public static final String FACE_UNLOCK_ALWAYS_REQUIRE_SWIPE = "face_unlock_always_require_swipe";
 
         /**
          * This are the settings to be backed up.

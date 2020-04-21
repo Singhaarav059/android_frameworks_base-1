@@ -132,6 +132,10 @@ import android.view.WindowManager;
 import android.view.WindowManagerGlobal;
 import android.view.accessibility.AccessibilityManager;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
 import android.widget.DateTimeView;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -216,6 +220,7 @@ import com.android.systemui.statusbar.NotificationShelf;
 import com.android.systemui.statusbar.NotificationViewHierarchyManager;
 import com.android.systemui.statusbar.PulseExpansionHandler;
 import com.android.systemui.statusbar.ScrimView;
+import com.android.systemui.statusbar.AODDimView;
 import com.android.systemui.statusbar.StatusBarState;
 import com.android.systemui.statusbar.SysuiStatusBarStateController;
 import com.android.systemui.statusbar.VibratorHelper;
@@ -249,6 +254,7 @@ import com.android.systemui.statusbar.policy.ConfigurationController.Configurati
 import com.android.systemui.statusbar.policy.DeviceProvisionedController;
 import com.android.systemui.statusbar.policy.DeviceProvisionedController.DeviceProvisionedListener;
 import com.android.systemui.statusbar.policy.ExtensionController;
+import com.android.systemui.statusbar.policy.FlashlightController;
 import com.android.systemui.statusbar.policy.HeadsUpManager;
 import com.android.systemui.statusbar.policy.KeyguardMonitor;
 import com.android.systemui.statusbar.policy.KeyguardUserSwitcher;
@@ -516,6 +522,7 @@ public class StatusBar extends SystemUI implements DemoMode,
     private static ImageButton mDismissAllButton;
     protected static NotificationPanelView mStaticNotificationPanel;
     public static boolean mClearableNotifications;
+    private AODDimView mAODDimView;
 
     // ensure quick settings is disabled until the current user makes it through the setup wizard
     @VisibleForTesting
@@ -639,6 +646,7 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
     };
 
+    private FlashlightController mFlashlightController;
     private KeyguardUserSwitcher mKeyguardUserSwitcher;
     protected UserSwitcherController mUserSwitcherController;
     protected NetworkController mNetworkController;
@@ -672,6 +680,10 @@ public class StatusBar extends SystemUI implements DemoMode,
                 public void onDreamingStateChanged(boolean dreaming) {
                     if (dreaming) {
                         maybeEscalateHeadsUp();
+                    }
+                    if (mAODDimView != null) {
+                        if (dreaming) mAODDimView.setVisible(true, true);
+                        if (!dreaming) mAODDimView.setVisible(false);
                     }
                 }
 
@@ -931,6 +943,7 @@ public class StatusBar extends SystemUI implements DemoMode,
         mStackScroller = mStatusBarWindow.findViewById(R.id.notification_stack_scroller);
         mZenController.addCallback(this);
         mQSBlurView = mStatusBarWindow.findViewById(R.id.qs_blur);
+        mAODDimView = mStatusBarWindow.findViewById(R.id.aod_screen_dim);
         NotificationListContainer notifListContainer = (NotificationListContainer) mStackScroller;
         mNotificationLogger.setUpWithContainer(notifListContainer);
 
@@ -1159,6 +1172,8 @@ public class StatusBar extends SystemUI implements DemoMode,
 
         // Private API call to make the shadows look better for Recents
         ThreadedRenderer.overrideProperty("ambientRatio", String.valueOf(1.5f));
+
+        mFlashlightController = Dependency.get(FlashlightController.class);
     }
 
     public void updateBlurVisibility() {
@@ -2297,7 +2312,20 @@ public class StatusBar extends SystemUI implements DemoMode,
 
     @Override
     public void toggleCameraFlash() {
-        mDozeServiceHost.toggleCameraFlash();
+        if (!isScreenFullyOff() && mDeviceInteractive && !mPulsing && !mDozing) {
+            toggleFlashlight();
+            return;
+        }
+        mDozeServiceHost.toggleFlashlightProximityCheck();
+    }
+
+    private void toggleFlashlight() {
+        if (mFlashlightController != null) {
+            mFlashlightController.initFlashLight();
+            if (mFlashlightController.hasFlashlight() && mFlashlightController.isAvailable()) {
+                mFlashlightController.setFlashlight(!mFlashlightController.isEnabled());
+            }
+        }
     }
 
     void makeExpandedVisible(boolean force) {
@@ -4446,6 +4474,9 @@ public class StatusBar extends SystemUI implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SHOW_MEDIA_HEADS_UP),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.SCREEN_OFF_FOD),
+                    false, this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -4471,6 +4502,7 @@ public class StatusBar extends SystemUI implements DemoMode,
             setGestureNavOptions();
             updateKeyguardStatusSettings();
             updateNavigationBar(getRegisterStatusBarResult(), false);
+            updateAODDimView();
             setMediaHeadsup();
         }
     }
@@ -4583,6 +4615,11 @@ public class StatusBar extends SystemUI implements DemoMode,
         if (mMediaManager != null) {
             mMediaManager.setMediaHeadsup();
         }
+    }
+
+    private void updateAODDimView() {
+        mAODDimView.setEnabled(Settings.System.getIntForUser(mContext.getContentResolver(),
+            Settings.System.SCREEN_OFF_FOD, 0, UserHandle.USER_CURRENT) != 0);
     }
 
     public int getWakefulnessState() {
@@ -4856,6 +4893,7 @@ public class StatusBar extends SystemUI implements DemoMode,
                 public void onPulseStarted() {
                     callback.onPulseStarted();
                     updateNotificationPanelTouchState();
+                    mAODDimView.setVisible(false);
                     setPulsing(true);
                     KeyguardUpdateMonitor.getInstance(mContext).setPulsing(true);
                 }
@@ -4869,6 +4907,7 @@ public class StatusBar extends SystemUI implements DemoMode,
                     if (mStatusBarWindow != null) {
                         mStatusBarWindow.suppressWakeUpGesture(false);
                     }
+                    mAODDimView.setVisible(true);
                     setPulsing(false);
                     KeyguardUpdateMonitor.getInstance(mContext).setPulsing(false);
                 }
@@ -5028,10 +5067,15 @@ public class StatusBar extends SystemUI implements DemoMode,
             return mAnimateScreenOff;
         }
 
-        public void toggleCameraFlash() {
+        public void toggleFlashlightProximityCheck() {
             for (Callback callback : mCallbacks) {
-                callback.toggleCameraFlash();
+                callback.toggleFlashlightProximityCheck();
             }
+        }
+
+        @Override
+        public void performToggleFlashlight() {
+            toggleFlashlight();
         }
     }
 
