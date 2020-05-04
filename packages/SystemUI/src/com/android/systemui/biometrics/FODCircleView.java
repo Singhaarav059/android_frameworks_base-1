@@ -34,7 +34,6 @@ import android.graphics.drawable.AnimationDrawable;
 import android.hardware.biometrics.BiometricSourceType;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.PowerManager;
 import android.os.RemoteException;
 import android.provider.Settings;
 import android.view.Display;
@@ -86,9 +85,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     private boolean mCanUnlockWithFp;
 
     private Handler mHandler;
-
-    private PowerManager mPowerManager;
-    private PowerManager.WakeLock mWakeLock;
 
     private Timer mBurnInProtectionTimer;
 
@@ -272,10 +268,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
         Dependency.get(ConfigurationController.class).addCallback(this);
 
-        mPowerManager = context.getSystemService(PowerManager.class);
-        mWakeLock = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                FODCircleView.class.getSimpleName());
-
         mFodPressedImage = res.getBoolean(R.bool.config_fodPressedImage);
 
         mFODAnimation = new FODAnimation(context, mPositionX, mPositionY);
@@ -393,10 +385,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         mIsCircleShowing = true;
 
         setKeepScreenOn(true);
-
-        if (mIsDreaming) {
-            mWakeLock.acquire(300);
-        }
 
         setDim(true);
         updateAlpha();
