@@ -32,9 +32,9 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 import android.hardware.biometrics.BiometricSourceType;
+import android.hardware.display.DisplayManager;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.PowerManager;
 import android.os.RemoteException;
 import android.provider.Settings;
 import android.view.Display;
@@ -72,6 +72,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     private final Paint mPaintFingerprint = new Paint();
     private final WindowManager.LayoutParams mParams = new WindowManager.LayoutParams();
     private final WindowManager mWindowManager;
+    private final DisplayManager mDisplayManager;
 
     private IFingerprintInscreen mFingerprintInscreenDaemon;
 
@@ -85,10 +86,9 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     private boolean mIsAuthenticated;
     private boolean mCanUnlockWithFp;
 
-    private Handler mHandler;
+    private float mCurrentDimAmount = 0.0f;
 
-    private PowerManager mPowerManager;
-    private PowerManager.WakeLock mWakeLock;
+    private Handler mHandler;
 
     private Timer mBurnInProtectionTimer;
 
@@ -97,6 +97,8 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     private FODAnimation mFODAnimation;
     private boolean mIsRecognizingAnimEnabled;
     private boolean mShouldRemoveIconOnAOD;
+    private boolean mScreenOffFodEnabled;
+    private boolean mScreenOffFodIconEnabled;
 
     private IFingerprintInscreenCallback mFingerprintInscreenCallback =
             new IFingerprintInscreenCallback.Stub() {
@@ -238,6 +240,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         mPaintFingerprint.setAntiAlias(true);
         mPaintFingerprint.setColor(res.getColor(R.color.config_fodColor));
 
+        mDisplayManager = context.getSystemService(DisplayManager.class);
         mWindowManager = context.getSystemService(WindowManager.class);
 
         mNavigationBarSize = res.getDimensionPixelSize(R.dimen.navigation_bar_size);
@@ -267,15 +270,21 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         mUpdateMonitor = KeyguardUpdateMonitor.getInstance(context);
         mUpdateMonitor.registerCallback(mMonitorCallback);
 
+        getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            float drawingDimAmount = mParams.dimAmount;
+            if (mCurrentDimAmount == 0.0f && drawingDimAmount > 0.0f) {
+                dispatchPress();
+                mCurrentDimAmount = drawingDimAmount;
+            } else if (mCurrentDimAmount > 0.0f && drawingDimAmount == 0.0f) {
+                mCurrentDimAmount = drawingDimAmount;
+            }
+        });
+
         mCanUnlockWithFp = canUnlockWithFp();
 
         updateCutoutFlags();
 
         Dependency.get(ConfigurationController.class).addCallback(this);
-
-        mPowerManager = context.getSystemService(PowerManager.class);
-        mWakeLock = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                FODCircleView.class.getSimpleName());
 
         mFodPressedImage = res.getBoolean(R.bool.config_fodPressedImage);
 
@@ -395,10 +404,6 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
 
         setKeepScreenOn(true);
 
-        if (mIsDreaming) {
-            mWakeLock.acquire(300);
-        }
-
         setDim(true);
         updateAlpha();
 
@@ -436,7 +441,10 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
             return;
         }
 
+        updatePosition();
+
         this.setImageResource(R.drawable.fod_icon_default);
+        this.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
     }
 
     public void show() {
@@ -471,7 +479,7 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
         if (mIsCircleShowing) {
             setAlpha(1.0f);
         } else {
-            setAlpha(mIsDreaming ? 0.75f : 1.0f);
+            setAlpha(mIsDreaming ? 0.5f : 1.0f);
         }
     }
 
@@ -542,9 +550,11 @@ public class FODCircleView extends ImageView implements ConfigurationListener {
     private void updateSettings() {
         mIsRecognizingAnimEnabled = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.FOD_RECOGNIZING_ANIMATION, 1) != 0;
-
-        mShouldRemoveIconOnAOD = Settings.System.getInt(mContext.getContentResolver(),
+        mScreenOffFodEnabled = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.SCREEN_OFF_FOD, 0) != 0;
+        mScreenOffFodIconEnabled = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.SCREEN_OFF_FOD_ICON, 1) != 0;
+        mShouldRemoveIconOnAOD = mScreenOffFodEnabled && !mScreenOffFodIconEnabled;
     }
 
     private class BurnInProtectionTask extends TimerTask {

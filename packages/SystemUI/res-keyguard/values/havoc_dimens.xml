@@ -25,4 +25,9 @@
          view to incorporate the FOD icon -->
     <dimen name="keyguard_security_fod_view_margin">140dp</dimen>
 
+    <!-- Top margin of the Emergency button -->
+    <dimen name="eca_button_top_margin">@dimen/eca_overlap</dimen>
+    <!-- Bottom margin of the Emergency button -->
+    <dimen name="eca_button_bottom_margin">0dp</dimen>
+
 </resources>

@@ -22,7 +22,6 @@ import android.annotation.ColorInt;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -258,7 +257,7 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         mBatteryMeterView = findViewById(R.id.battery);
         mBatteryMeterView.setForceShowPercent(true);
         mBatteryMeterView.setOnClickListener(this);
-        mBatteryMeterView.setPercentShowMode(BatteryMeterView.MODE_ESTIMATE);
+        mBatteryMeterView.setPercentShowMode(getBatteryPercentMode());
 
         mClockView = findViewById(R.id.clock);
         mClockView.setOnClickListener(this);
@@ -269,7 +268,8 @@ public class QuickStatusBarHeader extends RelativeLayout implements
 
         // Tint for the battery icons are handled in setupHost()
         mBatteryRemainingIcon = findViewById(R.id.batteryRemainingIcon);
-        mBatteryRemainingIcon.setPercentShowMode(BatteryMeterView.MODE_ESTIMATE);
+        mBatteryRemainingIcon.setIsQsHeader(true);
+        mBatteryRemainingIcon.setPercentShowMode(getBatteryPercentMode());
         mBatteryRemainingIcon.setOnClickListener(this);
         mRingerModeTextView.setSelected(true);
         mNextAlarmTextView.setSelected(true);
@@ -444,7 +444,6 @@ public class QuickStatusBarHeader extends RelativeLayout implements
                 UserHandle.USER_CURRENT) == 1;
         updateResources();
         updateStatusbarProperties();
-        updateBatteryStyle();
     }
 
     private void updateBatteryStyle() {
@@ -471,6 +470,19 @@ public class QuickStatusBarHeader extends RelativeLayout implements
         mPrivacyChipAlphaAnimator = new TouchAnimator.Builder()
                 .addFloat(mPrivacyChip, "alpha", 1, 0, 1)
                 .build();
+    }
+
+    private int getBatteryPercentMode() {
+        boolean showBatteryEstimate = Settings.System
+                .getIntForUser(getContext().getContentResolver(),
+                Settings.System.QS_SHOW_BATTERY_ESTIMATE, 1, UserHandle.USER_CURRENT) == 1;
+        return showBatteryEstimate ?
+               BatteryMeterView.MODE_ESTIMATE : BatteryMeterView.MODE_ON;
+    }
+
+    public void setBatteryPercentMode() {
+        mBatteryMeterView.setPercentShowMode(getBatteryPercentMode());
+        mBatteryRemainingIcon.setPercentShowMode(getBatteryPercentMode());
     }
 
     public void setExpanded(boolean expanded) {
@@ -722,9 +734,6 @@ public class QuickStatusBarHeader extends RelativeLayout implements
 
         void observe() {
             ContentResolver resolver = getContext().getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_BATTERY_STYLE),
-                    false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CUSTOM_HEADER), false,
                     this, UserHandle.USER_ALL);

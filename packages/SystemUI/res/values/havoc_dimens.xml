@@ -70,11 +70,6 @@
     <dimen name="right_tri_state_up_top_left_radius">24.0dip</dimen>
     <dimen name="right_tri_state_up_top_right_radius">24.0dip</dimen>
 
-    <!-- Height of the battery icon in the status bar when set to circle style. -->
-    <dimen name="status_bar_battery_icon_circle_height">12.5dp</dimen>
-    <!-- Width of the battery icon in the status bar when set to circle style. -->
-    <dimen name="status_bar_battery_icon_circle_width">12.5dp</dimen>
-
     <!-- The starting padding for the clock in the status bar. -->
     <dimen name="status_bar_right_clock_starting_padding">2dp</dimen>
 
@@ -108,7 +103,14 @@
     <!-- Volume panel -->
     <dimen name="volume_dialog_panel_transparent_padding_left">20dp</dimen>
 
+    <!-- Size of the FOD icon -->
+    <dimen name="fod_icon_size">174.0px</dimen>
+
     <!-- Size of the FOD animation -->
     <dimen name="fod_animation_size">550.0px</dimen>
+    <dimen name="fod_animation_offset">0.0px</dimen>
+
+    <!-- Width of the battery icon in the status bar when set to circle style. -->
+    <dimen name="status_bar_battery_icon_circle_width">13.5dp</dimen>
 
 </resources>

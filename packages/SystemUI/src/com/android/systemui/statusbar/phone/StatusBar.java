@@ -195,6 +195,7 @@ import com.android.systemui.plugins.statusbar.StatusBarStateController;
 import com.android.systemui.qs.QSFragment;
 import com.android.systemui.qs.QSPanel;
 import com.android.systemui.qs.QuickQSPanel;
+import com.android.systemui.qs.QuickStatusBarHeader;
 import com.android.systemui.recents.Recents;
 import com.android.systemui.recents.ScreenPinningRequest;
 import com.android.systemui.shared.system.ActivityManagerWrapper;
@@ -451,6 +452,7 @@ public class StatusBar extends SystemUI implements DemoMode,
             Dependency.get(RemoteInputQuickSettingsDisabler.class);
 
     private View mReportRejectedTouch;
+    private View mQSBarHeader;
 
     private boolean mExpandedVisible;
 
@@ -1468,6 +1470,7 @@ public class StatusBar extends SystemUI implements DemoMode,
             fragmentHostManager.addTagListener(QS.TAG, (tag, f) -> {
                 QS qs = (QS) f;
                 if (qs instanceof QSFragment) {
+                    mQSBarHeader = ((QSFragment) qs).getHeader();
                     mQSPanel = ((QSFragment) qs).getQsPanel();
                     mQSPanel.setBrightnessMirror(mBrightnessMirrorController);
                     mQuickQSPanel = ((QSFragment) qs).getQuickQsPanel();
@@ -4485,6 +4488,9 @@ public class StatusBar extends SystemUI implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_OFF_FOD),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QS_SHOW_BATTERY_ESTIMATE),
+                    false, this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -4512,6 +4518,7 @@ public class StatusBar extends SystemUI implements DemoMode,
             updateNavigationBar(getRegisterStatusBarResult(), false);
             updateAODDimView();
             setMediaHeadsup();
+            setQsBatteryPercentMode();
         }
     }
 
@@ -4628,6 +4635,12 @@ public class StatusBar extends SystemUI implements DemoMode,
     private void updateAODDimView() {
         mAODDimView.setEnabled(Settings.System.getIntForUser(mContext.getContentResolver(),
             Settings.System.SCREEN_OFF_FOD, 0, UserHandle.USER_CURRENT) != 0);
+    }
+
+    private void setQsBatteryPercentMode() {
+        if (mQSBarHeader != null) {
+            ((QuickStatusBarHeader) mQSBarHeader).setBatteryPercentMode();
+        }
     }
 
     public int getWakefulnessState() {

@@ -3884,14 +3884,6 @@ public final class Settings {
          */
         public static final String RINGTONE = "ringtone";
 
-        /**
-         * Persistent store for the system-wide default ringtone for Slot2 URI.
-         *
-         * @see #RINGTONE
-         * @see #DEFAULT_RINGTONE2_URI
-         */
-        public static final String RINGTONE2 = "ringtone2";
-
         private static final Validator RINGTONE_VALIDATOR = URI_VALIDATOR;
 
         /**
@@ -3904,23 +3896,10 @@ public final class Settings {
          */
         public static final Uri DEFAULT_RINGTONE_URI = getUriFor(RINGTONE);
 
-        /**
-         * A {@link Uri} that will point to the current default ringtone for Slot2
-         * at any given time.
-         *
-         * @see #DEFAULT_RINGTONE_URI
-         */
-        public static final Uri DEFAULT_RINGTONE2_URI = getUriFor(RINGTONE2);
-
         /** {@hide} */
         public static final String RINGTONE_CACHE = "ringtone_cache";
         /** {@hide} */
         public static final Uri RINGTONE_CACHE_URI = getUriFor(RINGTONE_CACHE);
-
-        /** {@hide} */
-        public static final String RINGTONE2_CACHE = "ringtone2_cache";
-        /** {@hide} */
-        public static final Uri RINGTONE2_CACHE_URI = getUriFor(RINGTONE2_CACHE);
 
         /**
          * Persistent store for the system-wide default notification sound.
@@ -4572,6 +4551,17 @@ public final class Settings {
          * @hide
          */
         public static final String SHOW_BATTERY_PERCENT = "dummy_show_battery_percent";
+
+        /**
+         * Setting to determine whether or not to show the battery percentage in the qs status bar header.
+         *    0 - Show percentage
+         *    1 - Show remaining time
+         * @hide
+         */
+        public static final String QS_SHOW_BATTERY_ESTIMATE = "qs_show_battery_estimate";
+
+        /** @hide */
+        private static final Validator QS_SHOW_BATTERY_ESTIMATE_VALIDATOR = BOOLEAN_VALIDATOR;
 
         /**
          * Whether the user has already accepted MediaProjection permission for the built-in screenrecorder
@@ -5393,21 +5383,6 @@ public final class Settings {
         public static final String STATUS_BAR_QUICK_QS_PULLDOWN = "status_bar_quick_qs_pulldown";
 
         /**
-         * Battery style
-         * @hide
-         */
-        public static final String STATUS_BAR_BATTERY_STYLE = "status_bar_battery_style";
-
-        /**
-          * Statusbar Battery %
-          * 0: Hide the battery percentage
-          * 1: Display the battery percentage
-          * 2: Display the battery percentage only while charging
-          * @hide
-          */
-        public static final String STATUS_BAR_SHOW_BATTERY_PERCENT = "status_bar_show_battery_percent";
-
-        /**
          * Gaming mode master switch
          * @hide
          */
@@ -5706,12 +5681,6 @@ public final class Settings {
 
         /** @hide */
         private static final Validator ASPECT_RATIO_APPS_ENABLED_VALIDATOR = BOOLEAN_VALIDATOR;
-
-        /**
-         * Whether to show battery estimates in QS
-         * @hide
-         */
-        public static final String QS_SHOW_BATTERY_ESTIMATE = "qs_show_battery_estimate";
 
         /**
          * Whether user can swap navigation lateral keys.
@@ -6408,12 +6377,6 @@ public final class Settings {
         public static final String SCREEN_OFF_FOD = "screen_off_fod";
 
         /**
-         * Whether to show IME space when navbar pill is hidden
-         * @hide
-         */
-        public static final String NAVIGATION_BAR_IME_SPACE = "navigation_bar_ime_space";
-
-        /**
          * Some creation simillar to samsung OneUI
          * @hide
          */
@@ -6425,6 +6388,33 @@ public final class Settings {
          * @hide
          */
         public static final String QS_DATAUSAGE = "qs_datausage";
+
+        /**
+         * Whether to show icon when Screen off FODis enabled
+         * @hide
+         */
+        public static final String SCREEN_OFF_FOD_ICON = "screen_off_fod_icon";
+
+        /**
+         * Whether to show IME space when navbar pill is hidden
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_IME_SPACE = "navigation_bar_ime_space";
+
+        /**
+         * Battery style
+         * @hide
+         */
+        public static final String STATUS_BAR_BATTERY_STYLE = "status_bar_battery_style";
+
+        /**
+          * Statusbar Battery %
+          * 0: Hide the battery percentage
+          * 1: Display the battery percentage inside the icon
+          * 2: Display the battery percentage next to Icon
+          * @hide
+          */
+        public static final String STATUS_BAR_SHOW_BATTERY_PERCENT = "status_bar_show_battery_percent";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
@@ -6481,10 +6471,10 @@ public final class Settings {
             POINTER_SPEED,
             VIBRATE_WHEN_RINGING,
             RINGTONE,
-            RINGTONE2,
             LOCK_TO_APP_ENABLED,
             NOTIFICATION_SOUND,
             ACCELEROMETER_ROTATION,
+            QS_SHOW_BATTERY_ESTIMATE,
             NOTIFICATION_VIBRATION_INTENSITY,
             RING_VIBRATION_INTENSITY,
             HAPTIC_FEEDBACK_INTENSITY,
@@ -6617,7 +6607,6 @@ public final class Settings {
             PUBLIC_SETTINGS.add(VOLUME_NOTIFICATION);
             PUBLIC_SETTINGS.add(VOLUME_BLUETOOTH_SCO);
             PUBLIC_SETTINGS.add(RINGTONE);
-            PUBLIC_SETTINGS.add(RINGTONE2);
             PUBLIC_SETTINGS.add(NOTIFICATION_SOUND);
             PUBLIC_SETTINGS.add(ALARM_ALERT);
             PUBLIC_SETTINGS.add(TEXT_AUTO_REPLACE);
@@ -6684,6 +6673,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(POINTER_SPEED);
             PRIVATE_SETTINGS.add(LOCK_TO_APP_ENABLED);
             PRIVATE_SETTINGS.add(EGG_MODE);
+            PRIVATE_SETTINGS.add(QS_SHOW_BATTERY_ESTIMATE);
             PRIVATE_SETTINGS.add(DISPLAY_COLOR_MODE);
             PRIVATE_SETTINGS.add(DISPLAY_TEMPERATURE_DAY);
             PRIVATE_SETTINGS.add(DISPLAY_TEMPERATURE_NIGHT);
@@ -6819,7 +6809,6 @@ public final class Settings {
             VALIDATORS.put(RING_VIBRATION_INTENSITY, VIBRATION_INTENSITY_VALIDATOR);
             VALIDATORS.put(HAPTIC_FEEDBACK_INTENSITY, VIBRATION_INTENSITY_VALIDATOR);
             VALIDATORS.put(RINGTONE, RINGTONE_VALIDATOR);
-            VALIDATORS.put(RINGTONE2, RINGTONE_VALIDATOR);
             VALIDATORS.put(NOTIFICATION_SOUND, NOTIFICATION_SOUND_VALIDATOR);
             VALIDATORS.put(ALARM_ALERT, ALARM_ALERT_VALIDATOR);
             VALIDATORS.put(TEXT_AUTO_REPLACE, TEXT_AUTO_REPLACE_VALIDATOR);
@@ -6877,6 +6866,7 @@ public final class Settings {
             VALIDATORS.put(WIFI_STATIC_NETMASK, WIFI_STATIC_NETMASK_VALIDATOR);
             VALIDATORS.put(WIFI_STATIC_DNS1, WIFI_STATIC_DNS1_VALIDATOR);
             VALIDATORS.put(WIFI_STATIC_DNS2, WIFI_STATIC_DNS2_VALIDATOR);
+            VALIDATORS.put(QS_SHOW_BATTERY_ESTIMATE, QS_SHOW_BATTERY_ESTIMATE_VALIDATOR);
             VALIDATORS.put(AMBIENT_NOTIFICATION_LIGHT, AMBIENT_NOTIFICATION_LIGHT_VALIDATOR);
             VALIDATORS.put(AMBIENT_LIGHT_COLOR, AMBIENT_LIGHT_COLOR_VALIDATOR);
             VALIDATORS.put(AMBIENT_LIGHT_CUSTOM_COLOR, AMBIENT_LIGHT_CUSTOM_COLOR_VALIDATOR);
@@ -7007,7 +6997,6 @@ public final class Settings {
         public static final Map<String, String> CLONE_FROM_PARENT_ON_VALUE = new ArrayMap<>();
         static {
             CLONE_FROM_PARENT_ON_VALUE.put(RINGTONE, Secure.SYNC_PARENT_SOUNDS);
-            CLONE_FROM_PARENT_ON_VALUE.put(RINGTONE2, Secure.SYNC_PARENT_SOUNDS);
             CLONE_FROM_PARENT_ON_VALUE.put(NOTIFICATION_SOUND, Secure.SYNC_PARENT_SOUNDS);
             CLONE_FROM_PARENT_ON_VALUE.put(ALARM_ALERT, Secure.SYNC_PARENT_SOUNDS);
         }
