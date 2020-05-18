@@ -1,5 +1,5 @@
 <!--
-/**
+**
  * Copyright (c) 2019, The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
  */
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!-- Name of a font family to use for body text. -->
     <string name="config_bodyFontFamily" translatable="false">googlesans</string>
     <!-- Name of a font family to use for medium body text. -->
     <string name="config_bodyFontFamilyMedium" translatable="false">googlesans-semi-bold</string>
@@ -26,4 +25,8 @@
     <string name="config_headlineFontFamilyMedium" translatable="false">googlesans-bold</string>
     <!-- Allows setting custom fontFeatureSettings on specific text. -->
     <string name="config_headlineFontFeatureSettings">ss03</string>
+    <!-- Name of a font family to use as light font. For theming purpose. -->
+    <string name="config_lightFontFamily" translatable="false">@string/config_bodyFontFamily</string>
+    <!-- Name of a font family to use as regular font. For theming purpose. -->
+    <string name="config_regularFontFamily" translatable="false">@string/config_bodyFontFamily</string>
 </resources>

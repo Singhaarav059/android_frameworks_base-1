@@ -28,12 +28,23 @@ LOCAL_REQUIRED_MODULES := \
 	DisplayCutoutEmulationCornerOverlay \
 	DisplayCutoutEmulationDoubleOverlay \
 	DisplayCutoutEmulationTallOverlay \
-	FontArbutusSourceOverlay \
+	FontAclonicaSourceOverlay \
+	FontAmaranteSourceOverlay \
 	FontArvoLatoOverlay \
-	FontComicSansSourceOverlay \
-	FontGoogleSansSourceOverlay \
 	FontGoogleSansOverlay \
+	FontCagliostroSourceOverlay \
+	FontComfortaaSourceOverlay \
+	FontExotwoSourceOverlay \
+	FontStoropiaSourceOverlay \
+	FontUbuntuSourceOverlay \
+	FontComicSansSourceOverlay \
+	FontCoolstorySourceOverlay \
+	FontGoogleSansSourceOverlay \
+	FontLGSmartGothicSourceOverlay \
 	FontNotoSerifSourceOverlay \
+	FontOneplusSlateSource \
+	FontReemKufiSourceOverlay \
+	FontRosemarySourceOverlay \
 	FontRubikRubikOverlay \
 	FontCircularStdOverlay \
 	FontOnePlusSlateOverlay \
@@ -41,9 +52,6 @@ LOCAL_REQUIRED_MODULES := \
 	FontAmaranteSourceOverlay \
 	FontAntipastoProSourceOverlay \
 	FontBariolSourceOverlay \
-	FontCagliostroSourceOverlay \
-	FontCoolstorySourceOverlay \
-	FontLGSmartGothicSourceOverlay \
 	FontNotoSerifSourceOverlay \
 	FontRosemarySourceOverlay \
 	FontEvolveSansSourceOverlay \
@@ -57,6 +65,13 @@ LOCAL_REQUIRED_MODULES := \
 	FontSurferSourceOverlay \
 	FontOneplusSlateSource \
 	FontSamsungOneSourceOverlay \
+	FontNokiaPureSourceOverlay \
+	FontNunitoSourceOverlay \
+	FontFifa2018SourceOverlay \
+	FontCoconSourceOverlay \
+	FontQuandoSourceOverlay \
+	FontGrandHotelSourceOverlay \
+	FontRedressedSourceOverlay \
 	IconPackCircularAndroidOverlay \
 	IconPackCircularPixelLauncherOverlay \
 	IconPackCircularPixelThemePickerOverlay \
