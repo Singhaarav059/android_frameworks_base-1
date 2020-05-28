@@ -6358,13 +6358,6 @@ public final class Settings {
         public static final String SCREEN_OFF_FOD = "screen_off_fod";
 
         /**
-         * Some creation simillar to samsung OneUI
-         * @hide
-         */
-        public static final String SETTINGS_SPACER = "settings_spacer";
-
-
-        /**
          * Show data usage in QS header
          * @hide
          */
